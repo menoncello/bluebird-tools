@@ -18,7 +18,8 @@ Promise.log = function log(level, text, ...args) {
 };
 
 Promise.prototype.log = function log(level, text, ...args) {
-	return Promise.log(level, text, ...args);
+	Promise.log(level, text, ...args);
+	return this;
 };
 
 Promise.prototype.silly = function log(text, ...args) {
