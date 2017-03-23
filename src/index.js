@@ -1,4 +1,5 @@
 const Promise = require('bluebird');
+const now = require('performance-now');
 
 Promise.configureLog = function configureLog(log) {
 	this._log = function(level, text, ...args) {
@@ -71,6 +72,15 @@ Promise.prototype.unlessLog = function unless(level, conditional, text, ...args)
 		Promise.log(level, text, ...args);
 	}
 	return this;
+};
+
+Promise.prototype.thenMonitor = function thenMonitor(name, method) {
+	return this.then(x => {
+		const start = now();
+		this.debug('starting', name);
+		return method(x)
+			.debug('finished %s in %sms', name, (now() - start).toFixed(3));
+	});
 };
 
 Promise.convert = function convert(promise) {
