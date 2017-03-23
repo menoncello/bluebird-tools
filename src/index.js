@@ -55,8 +55,22 @@ Promise.prototype.when = function when(conditional, success) {
 	return this.iif(conditional, success, echo);
 };
 
+Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
+	if (conditional(this.value())) {
+		Promise.log(level, text, ...args);
+	}
+	return this;
+};
+
 Promise.prototype.unless = function unless(conditional, fail) {
 	return this.iif(conditional, echo, fail);
+};
+
+Promise.prototype.unlessLog = function unless(level, conditional, text, ...args) {
+	if (!conditional(this.value())) {
+		Promise.log(level, text, ...args);
+	}
+	return this;
 };
 
 Promise.convert = function convert(promise) {

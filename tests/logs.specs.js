@@ -251,4 +251,32 @@ describe('logging', () => {
 			Promise.resolve().error(message, arguments[0], arguments[1]);
 		});
 	});
+	context('#whenLog', () => {
+		it('when the result is true, must log', (done) => {
+			const level = 'error';
+			const message = 'log test';
+
+			Promise.configureLog((l, msg) => {
+				assert.equal(l, level);
+				assert.equal(msg, message);
+				done();
+			});
+
+			Promise.resolve(3)
+				.whenLog(level, x => x === 3, message)
+		});
+
+		it('when the result is false, must not execute the method', (done) => {
+			const level = 'error';
+			const message = 'log test';
+
+			Promise.configureLog(() => {
+				done({ message: 'has logged' });
+			});
+
+			Promise.resolve(2)
+				.whenLog(level, x => x === 3, message)
+				.then(() => done());
+		});
+	});
 });

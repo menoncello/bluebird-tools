@@ -97,6 +97,16 @@ Promise.resolve().warning('testing log', 1, 2, 3);
 Promise.resolve().error('testing log', 1, 2, 3);
 ```
 
+#### promise.whenLog(level, conditional, text, ...args) -> `promise`
+```js
+Promise.resolve(1).whenLog('into', x => x === 1, 'testing log', 1, 2, 3);
+```
+
+#### promise.unlessLog(level, conditional, text, ...args) -> `promise`
+```js
+Promise.resolve(1).unlessLog('into', x => x === 2, 'testing log', 1, 2, 3);
+```
+
 ### Manipulating promises
  
 #### Promise.convert(promise) -> promise
