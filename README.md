@@ -96,3 +96,11 @@ Promise.resolve().warning('testing log', 1, 2, 3);
 ```js
 Promise.resolve().error('testing log', 1, 2, 3);
 ```
+
+### Manipulating promises
+ 
+#### Promise.convert(promise) -> promise
+Converts a native promise to a BluebirdTools promise
+```js
+Promise.convert(promise)
+```

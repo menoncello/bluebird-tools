@@ -59,6 +59,14 @@ Promise.prototype.unless = function unless(conditional, fail) {
 	return this.iif(conditional, echo, fail);
 };
 
+Promise.convert = function convert(promise) {
+	return new Promise((resolve, reject) => {
+		promise
+			.then(resolve)
+			.catch(reject);
+	});
+};
+
 module.exports = Promise;
 
 function echo(ping) {
