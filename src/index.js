@@ -48,8 +48,7 @@ Promise.prototype.error = function log(text, ...args) {
 };
 
 Promise.prototype.iif = function iif(conditional, success, fail) {
-	const val = this.value();
-	return new Promise((resolve) => resolve(conditional(val) ? success(val) : fail(val)));
+	return this.then(val => new Promise((resolve) => resolve(conditional(val) ? success(val) : fail(val))));
 };
 
 Promise.prototype.when = function when(conditional, success) {
@@ -57,10 +56,13 @@ Promise.prototype.when = function when(conditional, success) {
 };
 
 Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
-	if (conditional(this.value())) {
-		Promise.log(level, text, ...args);
-	}
-	return this;
+	return this.then(x => {
+		if (conditional(this.value())) {
+			Promise.log(level, text, ...args);
+		}
+
+		return this;
+	});
 };
 
 Promise.prototype.unless = function unless(conditional, fail) {
@@ -68,10 +70,13 @@ Promise.prototype.unless = function unless(conditional, fail) {
 };
 
 Promise.prototype.unlessLog = function unless(level, conditional, text, ...args) {
-	if (!conditional(this.value())) {
-		Promise.log(level, text, ...args);
-	}
-	return this;
+	return this.then(x => {
+			if (!conditional(this.value())) {
+				Promise.log(level, text, ...args);
+			}
+			return this;
+		}
+	);
 };
 
 Promise.prototype.thenMonitor = function thenMonitor(name, method) {
@@ -79,7 +84,7 @@ Promise.prototype.thenMonitor = function thenMonitor(name, method) {
 		const start = now();
 		this.debug('starting', name);
 		return method(x)
-			.debug('finished %s in %sms', name, (now() - start).toFixed(3));
+			.debug('finished', name, 'in', (now() - start).toFixed(3), 'ms');
 	});
 };
 
