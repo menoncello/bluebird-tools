@@ -19,8 +19,7 @@ Promise.log = function log(level, text, ...args) {
 };
 
 Promise.prototype.log = function log(level, text, ...args) {
-	Promise.log(level, text, ...args);
-	return this;
+	return this.tap(() => Promise.log(level, text, ...args));
 };
 
 Promise.prototype.silly = function log(text, ...args) {
@@ -48,7 +47,11 @@ Promise.prototype.error = function log(text, ...args) {
 };
 
 Promise.prototype.iif = function iif(conditional, success, fail) {
-	return this.then(val => new Promise((resolve) => resolve(conditional(val) ? success(val) : fail(val))));
+	return this.then(
+		val => new Promise(
+			(resolve) => resolve(conditional(val)
+				? success(val)
+				: fail(val))));
 };
 
 Promise.prototype.when = function when(conditional, success) {
@@ -56,7 +59,7 @@ Promise.prototype.when = function when(conditional, success) {
 };
 
 Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
-	return this.then(x => {
+	return this.then(() => {
 		if (conditional(this.value())) {
 			Promise.log(level, text, ...args);
 		}
@@ -70,7 +73,7 @@ Promise.prototype.unless = function unless(conditional, fail) {
 };
 
 Promise.prototype.unlessLog = function unless(level, conditional, text, ...args) {
-	return this.then(x => {
+	return this.then(() => {
 			if (!conditional(this.value())) {
 				Promise.log(level, text, ...args);
 			}
