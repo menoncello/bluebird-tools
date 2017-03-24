@@ -91,12 +91,16 @@ Promise.prototype.thenMonitor = function thenMonitor(name, method) {
 	});
 };
 
+Promise.prototype.isBluebird = true;
+
 Promise.convert = function convert(promise) {
-	return new Promise((resolve, reject) => {
-		promise
-			.then(resolve)
-			.catch(reject);
-	});
+	return promise.isBluebird
+		? promise
+		: new Promise((resolve, reject) => {
+			promise
+				.then(resolve)
+				.catch(reject);
+		});
 };
 
 module.exports = Promise;

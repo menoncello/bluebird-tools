@@ -120,8 +120,15 @@ Promise.resolve(1).unlessLog('into', x => x === 2, 'testing log', 1, 2, 3);
 
 ### Manipulating promises
  
-#### Promise.convert(promise) -> promise
+#### Promise.convert(promise) -> `promise`
 Converts a native promise to a BluebirdTools promise
 ```js
 Promise.convert(promise)
+```
+
+#### promise.isBluebird -> `bool`
+Converts a native promise to a BluebirdTools promise
+```js
+if (Promise.resolve().isBluebird) { // true
+}
 ```
