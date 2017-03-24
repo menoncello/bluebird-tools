@@ -91,6 +91,15 @@ Promise.prototype.thenMonitor = function thenMonitor(name, method) {
 	});
 };
 
+Promise.prototype.whenMonitor = function thenMonitor(name, conditional, method) {
+	return this.when(conditional, x => {
+		const start = now();
+		this.debug('starting', name);
+		return method(x)
+			.debug('finished', name, 'in', (now() - start).toFixed(3), 'ms');
+	});
+};
+
 Promise.prototype.isBluebird = true;
 
 Promise.convert = function convert(promise) {

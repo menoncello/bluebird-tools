@@ -43,7 +43,17 @@ Promise.resolve()
     .thenMonitor('something', () => executeSomething());
     // logs:
     // - starting something
-    // - finishing something - 654ms
+    // - finishing something - 65.564ms
+```
+
+#### promise.whenMonitor(name, conditional, method) -> `promise`
+If `conditional` is true, calls `method` monitoring starting and ending
+ ```js
+Promise.resolve(3)
+    .whenMonitor('something', x => x === 3, () => executeSomething());
+    // logs:
+    // - starting something
+    // - finishing something - 1.234ms
 ```
 
 ### Logging
