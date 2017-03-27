@@ -91,6 +91,28 @@ Promise.prototype.thenMonitor = function thenMonitor(name, method) {
 	});
 };
 
+Promise.prototype.iifMonitor = function iifMonitor(name, conditional, success, fail) {
+	const start = now();
+	return this.then(
+		val => new Promise((resolve) => {
+			this.debug('starting', name);
+
+			const cond = conditional(val);
+
+			let result;
+			if (cond) {
+				this.debug('process', name, 'has success');
+				result = success(val);
+			} else {
+				this.debug('process', name, 'has fail');
+				result = fail(val);
+			}
+
+			return resolve(result);
+		}))
+		.debug('finished', name, 'in', (now() - start).toFixed(3), 'ms');
+};
+
 Promise.prototype.whenMonitor = function thenMonitor(name, conditional, method) {
 	return this.when(conditional, x => {
 		const start = now();

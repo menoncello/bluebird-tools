@@ -56,6 +56,18 @@ Promise.resolve(3)
     // - finishing something - 1.234ms
 ```
 
+#### promise.iifMonitor(name, conditional, method) -> `promise`
+If `conditional` is true, calls `success` or, if is false, calls `fail`, monitoring starting and ending
+ ```js
+Promise.resolve(3)
+    .iifMonitor('something', x => x === 3,
+     () => executeSomething(), () => executeSomethingElse());
+    // logs:
+    // - starting something
+    // - process something has success
+    // - finishing something - 1.234ms
+```
+
 ### Logging
 
 Configure logging for all Promise with the `logging` function.

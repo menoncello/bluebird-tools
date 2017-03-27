@@ -103,21 +103,39 @@ describe('flow control', () => {
 				.catch(e => done(e));
 		});
 	});
-	// context('#whenMonitor', () => {
-	// 	it('when the result is true, must execute the method', (done) => {
-	// 		Promise.resolve(3)
-	// 			.when(x => x === 3, (x) => {
-	// 				assert.equal(x, 3);
-	// 				done();
-	// 			});
-	// 	});
-	//
-	// 	it('when the result is false, must not execute the method', (done) => {
-	// 		Promise.resolve(2)
-	// 			.when(x => x === 3, () => done({message: 'equal'}), (x) => {
-	// 				done({ message: 'has executed the method' });
-	// 			})
-	// 			.then(() => done());
-	// 	});
-	// });
+	context('#iifMonitor', () => {
+		it('when conditional is true, should call success method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.iifMonitor('message test', x => x === 3, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				}, () => done({ message: 'this is the fail method' }))
+				.catch(done);
+		});
+
+		it('when conditional is fals, should call fail method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.iifMonitor('message test', x => x === 2, () => done({ message: 'this is the success method' }), (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('when conditional is true, should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.resolve(3)
+				.iifMonitor('message test', x => x === 3, Promise.resolve, Promise.resolve,
+					() => done({ message: 'this is the fail method' }))
+				.then(() => {
+					assert.equal(3, log.callCount);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+	});
 });
