@@ -78,7 +78,6 @@ describe('flow control', () => {
 				.catch(e => done(e));
 		});
 	});
-
 	context('#whenMonitor', () => {
 		it('when conditional is true, should call method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
@@ -95,6 +94,30 @@ describe('flow control', () => {
 			Promise.configureLog(log);
 			Promise.resolve(3)
 				.whenMonitor('', x => x === 3, Promise.resolve)
+				.then(() => {
+					assert.isTrue(log.calledTwice);
+					done();
+					return Promise.resolve();
+				})
+				.catch(e => done(e));
+		});
+	});
+	context('#unlessMonitor', () => {
+		it('when conditional is false, should call method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.unlessMonitor('message test', x => x === 2, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('when conditional is false, should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.resolve(3)
+				.unlessMonitor('', x => x === 2, Promise.resolve)
 				.then(() => {
 					assert.isTrue(log.calledTwice);
 					done();
