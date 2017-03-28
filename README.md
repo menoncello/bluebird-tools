@@ -78,6 +78,15 @@ Promise.resolve(3)
     // - finishing something - 1.234ms
 ```
 
+#### Promise.monitor(name, method) -> `promise`
+Calls `method`, monitoring starting and ending
+ ```js
+Promise.monitor('something', () => executeSomething());
+    // logs:
+    // - starting something
+    // - finishing something - 1.234ms
+```
+
 ### Logging
 
 Configure logging for all Promise with the `logging` function.

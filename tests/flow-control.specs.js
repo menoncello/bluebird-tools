@@ -31,7 +31,7 @@ describe('flow control', () => {
 
 		it('when the result is false, must not execute the method', (done) => {
 			Promise.resolve(2)
-				.when(x => x === 3, () => done({message: 'equal'}), (x) => {
+				.when(x => x === 3, () => done({message: 'equal'}), () => {
 					done({ message: 'has executed the method' });
 				})
 				.then(() => done());
@@ -48,10 +48,31 @@ describe('flow control', () => {
 
 		it('when the result is true, must not execute the method', (done) => {
 			Promise.resolve(3)
-				.unless(x => x === 3, () => done({message: 'equal'}), (x) => {
+				.unless(x => x === 3, () => done({message: 'equal'}), () => {
 					done({ message: 'has executed the method' });
 				})
 				.then(() => done());
+		});
+	});
+	context('Promise.#monitor', () => {
+		it('should call method', (done) => {
+			Promise.monitor('message test', () => {
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.monitor('', Promise.resolve)
+				.then(() => {
+					assert.isTrue(log.calledTwice);
+					done();
+					return Promise.resolve();
+				})
+				.catch(e => done(e));
 		});
 	});
 	context('#thenMonitor', () => {
