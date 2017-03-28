@@ -56,6 +56,16 @@ Promise.resolve(3)
     // - finishing something - 1.234ms
 ```
 
+#### promise.unlessMonitor(name, conditional, method) -> `promise`
+If `conditional` is false, calls `method` monitoring starting and ending
+ ```js
+Promise.resolve(3)
+    .unlessMonitor('something', x => x === 2, () => executeSomething());
+    // logs:
+    // - starting something
+    // - finishing something - 1.234ms
+```
+
 #### promise.iifMonitor(name, conditional, method) -> `promise`
 If `conditional` is true, calls `success` or, if is false, calls `fail`, monitoring starting and ending
  ```js
@@ -65,6 +75,15 @@ Promise.resolve(3)
     // logs:
     // - starting something
     // - process something has success
+    // - finishing something - 1.234ms
+```
+
+#### Promise.monitor(name, method) -> `promise`
+Calls `method`, monitoring starting and ending
+ ```js
+Promise.monitor('something', () => executeSomething());
+    // logs:
+    // - starting something
     // - finishing something - 1.234ms
 ```
 

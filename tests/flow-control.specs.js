@@ -31,7 +31,7 @@ describe('flow control', () => {
 
 		it('when the result is false, must not execute the method', (done) => {
 			Promise.resolve(2)
-				.when(x => x === 3, () => done({message: 'equal'}), (x) => {
+				.when(x => x === 3, () => done({message: 'equal'}), () => {
 					done({ message: 'has executed the method' });
 				})
 				.then(() => done());
@@ -48,10 +48,31 @@ describe('flow control', () => {
 
 		it('when the result is true, must not execute the method', (done) => {
 			Promise.resolve(3)
-				.unless(x => x === 3, () => done({message: 'equal'}), (x) => {
+				.unless(x => x === 3, () => done({message: 'equal'}), () => {
 					done({ message: 'has executed the method' });
 				})
 				.then(() => done());
+		});
+	});
+	context('Promise.#monitor', () => {
+		it('should call method', (done) => {
+			Promise.monitor('message test', () => {
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.monitor('', Promise.resolve)
+				.then(() => {
+					assert.isTrue(log.calledTwice);
+					done();
+					return Promise.resolve();
+				})
+				.catch(e => done(e));
 		});
 	});
 	context('#thenMonitor', () => {
@@ -78,7 +99,6 @@ describe('flow control', () => {
 				.catch(e => done(e));
 		});
 	});
-
 	context('#whenMonitor', () => {
 		it('when conditional is true, should call method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
@@ -95,6 +115,30 @@ describe('flow control', () => {
 			Promise.configureLog(log);
 			Promise.resolve(3)
 				.whenMonitor('', x => x === 3, Promise.resolve)
+				.then(() => {
+					assert.isTrue(log.calledTwice);
+					done();
+					return Promise.resolve();
+				})
+				.catch(e => done(e));
+		});
+	});
+	context('#unlessMonitor', () => {
+		it('when conditional is false, should call method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.unlessMonitor('message test', x => x === 2, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('when conditional is false, should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.resolve(3)
+				.unlessMonitor('', x => x === 2, Promise.resolve)
 				.then(() => {
 					assert.isTrue(log.calledTwice);
 					done();
