@@ -54,27 +54,6 @@ describe('flow control', () => {
 				.then(() => done());
 		});
 	});
-	context('Promise.#monitor', () => {
-		it('should call method', (done) => {
-			Promise.monitor('message test', () => {
-					done();
-					return Promise.resolve();
-				})
-				.catch(done);
-		});
-
-		it('should call 2 times the log method', (done) => {
-			const log = sinon.spy();
-			Promise.configureLog(log);
-			Promise.monitor('', Promise.resolve)
-				.then(() => {
-					assert.isTrue(log.calledTwice);
-					done();
-					return Promise.resolve();
-				})
-				.catch(e => done(e));
-		});
-	});
 	context('#thenMonitor', () => {
 		it('should call method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
@@ -180,6 +159,57 @@ describe('flow control', () => {
 					return Promise.resolve();
 				})
 				.catch(done);
+		});
+	});
+
+	context('Promise.#monitor', () => {
+		it('should call method', (done) => {
+			Promise.monitor('message test', () => {
+				done();
+				return Promise.resolve();
+			})
+				.catch(done);
+		});
+
+		it('should call 2 times the log method', (done) => {
+			const log = sinon.spy();
+			Promise.configureLog(log);
+			Promise.monitor('', Promise.resolve)
+				.then(() => {
+					assert.isTrue(log.calledTwice);
+					done();
+					return Promise.resolve();
+				})
+				.catch(e => done(e));
+		});
+	});
+	context('Promise.#iif', () => {
+		it('when the result is true, must execute the success function', (done) => {
+			Promise.iif(() => true, done, () => done({message: 'different'}));
+		});
+
+		it('when the result is false, must execute the fail function', (done) => {
+			Promise.iif(() => false, () => done({message: 'equal'}), done);
+		});
+	});
+	context('Promise.#when', () => {
+		it('when the result is true, must execute the method', (done) =>
+			Promise.when(() => 1 === 1, () => done())
+		);
+
+		it('when the result is false, must not execute the method', (done) => {
+			Promise.when(() => 1 === 2, () => done({message: 'equal'}))
+				.then(() => done())
+		});
+	});
+	context('Promise.#unless', () => {
+		it('when the result is false, must execute the method', (done) =>
+			Promise.unless(() => false, done)
+		);
+
+		it('when the result is true, must not execute the method', (done) => {
+			Promise.unless(x => true, () => done({message: 'equal'}))
+				.then(() => done());
 		});
 	});
 });

@@ -48,14 +48,21 @@ Promise.prototype.error = function log(text, ...args) {
 
 Promise.prototype.iif = function iif(conditional, success, fail) {
 	return this.then(
-		val => new Promise(
-			(resolve) => resolve(conditional(val)
-				? success(val)
-				: fail(val))));
+		(val) => new Promise(
+			(resolve) => resolve(conditional(val) ? success(val) : fail(val))));
+};
+
+Promise.iif = function iif(conditional, success, fail) {
+	return new Promise(
+			(resolve) => resolve(conditional() ? success() : fail()));
 };
 
 Promise.prototype.when = function when(conditional, success) {
 	return this.iif(conditional, success, echo);
+};
+
+Promise.when = function when(conditional, success) {
+	return Promise.iif(conditional, success, echo);
 };
 
 Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
@@ -70,6 +77,10 @@ Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
 
 Promise.prototype.unless = function unless(conditional, fail) {
 	return this.iif(conditional, echo, fail);
+};
+
+Promise.unless = function unless(conditional, fail) {
+	return Promise.iif(conditional, echo, fail);
 };
 
 Promise.prototype.unlessLog = function unless(level, conditional, text, ...args) {
