@@ -15,6 +15,12 @@ const Promise = require('bluebird-tools');
 
 ### Control Flow
 
+#### Promise.iif(condition, success, fail) -> `promise`
+Calls `success` if pass the `condition` or calls `fail`
+ ```js
+Promise.iif(x => x === 1, x => console.log('success', x), x => console.log('fail', x));
+```
+
 #### promise.iif(condition, success, fail) -> `promise`
 Calls `success` if pass the `condition` or calls `fail`
  ```js
@@ -29,11 +35,23 @@ Promise.resolve(1)
     .when(x => x === 1, x => console.log('success', x));
 ```
 
+#### Promise.when(condition, success) -> `promise`
+Calls `success` if pass the `condition` or calls `fail`
+ ```js
+Promise.when(x => x === 1, x => console.log('success', x));
+```
+
 #### promise.unless(condition, fail) -> `promise`
 Calls `success` if pass the `condition` or calls `fail`
  ```js
 Promise.resolve(1)
     .unless(x => x === 2, x => console.log('fail', x));
+```
+
+#### Promise.unless(condition, fail) -> `promise`
+Calls `success` if pass the `condition` or calls `fail`
+ ```js
+Promise.unless(x => x === 2, x => console.log('fail', x));
 ```
 
 #### promise.thenMonitor(name, method) -> `promise`
