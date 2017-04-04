@@ -142,6 +142,32 @@ Promise.prototype.unlessMonitor = function unlessMonitor(name, conditional, meth
 	});
 };
 
+Promise.prototype.for = function forMethod(start, end, method) {
+	return this.then(val => {
+		const result = [];
+		for (let i = start; i < end; i++) {
+			result.push(method(i, val));
+		}
+		return result;
+	});
+};
+
+Promise.prototype.forAll = function forMethod(start, end, method) {
+	const promises = [];
+	for (let i = start; i < end; i++) {
+		promises.push(new Promise((resolve, reject) => {
+			try {
+				const result = method(i, this.value());
+				resolve(result);
+			}
+			catch (e) {
+				reject(e);
+			}
+		}));
+	}
+	return Promise.all(promises);
+};
+
 Promise.monitor = function monitor(name, method) {
 	const start = now();
 	Promise.log('debug', 'starting', name);
