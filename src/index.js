@@ -49,12 +49,13 @@ Promise.prototype.error = function log(text, ...args) {
 Promise.prototype.iif = function iif(conditional, success, fail) {
 	return this.then(
 		(val) => new Promise(
-			(resolve) => resolve(conditional(val) ? success(val) : fail(val))));
+			(resolve) => resolve(
+				(typeof(conditional) === 'function' ?  conditional(val) : conditional) ? success(val) : fail(val))));
 };
 
 Promise.iif = function iif(conditional, success, fail) {
 	return new Promise(
-			(resolve) => resolve(conditional() ? success() : fail()));
+			(resolve) => resolve((typeof(conditional) === 'function' ?  conditional() : conditional) ? success() : fail()));
 };
 
 Promise.prototype.when = function when(conditional, success) {
@@ -67,7 +68,7 @@ Promise.when = function when(conditional, success) {
 
 Promise.prototype.whenLog = function when(level, conditional, text, ...args) {
 	return this.then(() => {
-		if (conditional(this.value())) {
+		if (typeof(conditional) === 'function' ?  conditional(this.value()) : conditional) {
 			Promise.log(level, text, ...args);
 		}
 
@@ -85,7 +86,7 @@ Promise.unless = function unless(conditional, fail) {
 
 Promise.prototype.unlessLog = function unless(level, conditional, text, ...args) {
 	return this.then(() => {
-			if (!conditional(this.value())) {
+			if (!(typeof(conditional) === 'function' ?  conditional(this.value()) : conditional)) {
 				Promise.log(level, text, ...args);
 			}
 			return this;
@@ -108,7 +109,7 @@ Promise.prototype.iifMonitor = function iifMonitor(name, conditional, success, f
 		val => new Promise((resolve) => {
 			this.debug('starting', name);
 
-			const cond = conditional(val);
+			const cond = typeof(conditional) === 'function' ?  conditional(val) : conditional;
 
 			let result;
 			if (cond) {
