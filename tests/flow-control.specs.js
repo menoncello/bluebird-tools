@@ -12,6 +12,14 @@ describe('flow control', () => {
 				}, () => done({message: 'different'}));
 		});
 
+		it('when the condition is true, must execute the success function', (done) => {
+			Promise.resolve(3)
+				.iif(true, (x) => {
+					assert.equal(x, 3);
+					done();
+				}, () => done({message: 'different'}));
+		});
+
 		it('when the result is false, must execute the fail function', (done) => {
 			Promise.resolve(2)
 				.iif(x => x === 3, () => done({message: 'equal'}), (x) => {
@@ -67,6 +75,14 @@ describe('flow control', () => {
 				});
 		});
 
+		it('when the condition is true, must execute the method', (done) => {
+			Promise.resolve(3)
+				.when(true, (x) => {
+					assert.equal(x, 3);
+					done();
+				});
+		});
+
 		it('when the result is false, must not execute the method', (done) => {
 			Promise.resolve(2)
 				.when(x => x === 3, () => done({message: 'equal'}), () => {
@@ -79,6 +95,14 @@ describe('flow control', () => {
 		it('when the result is false, must execute the method', (done) => {
 			Promise.resolve(2)
 				.unless(x => x === 3, (x) => {
+					assert.equal(x, 2);
+					done();
+				});
+		});
+
+		it('when the condition is false, must execute the method', (done) => {
+			Promise.resolve(2)
+				.unless(false, (x) => {
 					assert.equal(x, 2);
 					done();
 				});
@@ -117,9 +141,19 @@ describe('flow control', () => {
 		});
 	});
 	context('#whenMonitor', () => {
-		it('when conditional is true, should call method, passing the value of the promise', (done) => {
+		it('when conditional result is true, should call method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
 				.whenMonitor('message test', x => x === 3, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('when conditional is true, should call method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.whenMonitor('message test', true, (x) => {
 					assert.equal(x, 3);
 					done();
 					return Promise.resolve();
@@ -141,9 +175,19 @@ describe('flow control', () => {
 		});
 	});
 	context('#unlessMonitor', () => {
-		it('when conditional is false, should call method, passing the value of the promise', (done) => {
+		it('when conditional result is false, should call method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
 				.unlessMonitor('message test', x => x === 2, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				})
+				.catch(done);
+		});
+
+		it('when conditional is false, should call method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.unlessMonitor('message test', false, (x) => {
 					assert.equal(x, 3);
 					done();
 					return Promise.resolve();
@@ -165,7 +209,7 @@ describe('flow control', () => {
 		});
 	});
 	context('#iifMonitor', () => {
-		it('when conditional is true, should call success method, passing the value of the promise', (done) => {
+		it('when conditional result is true, should call success method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
 				.iifMonitor('message test', x => x === 3, (x) => {
 					assert.equal(x, 3);
@@ -175,7 +219,17 @@ describe('flow control', () => {
 				.catch(done);
 		});
 
-		it('when conditional is fals, should call fail method, passing the value of the promise', (done) => {
+		it('when conditional is true, should call success method, passing the value of the promise', (done) => {
+			Promise.resolve(3)
+				.iifMonitor('message test', true, (x) => {
+					assert.equal(x, 3);
+					done();
+					return Promise.resolve();
+				}, () => done({ message: 'this is the fail method' }))
+				.catch(done);
+		});
+
+		it('when conditional is false, should call fail method, passing the value of the promise', (done) => {
 			Promise.resolve(3)
 				.iifMonitor('message test', x => x === 2, () => done({ message: 'this is the success method' }), (x) => {
 					assert.equal(x, 3);
@@ -222,30 +276,42 @@ describe('flow control', () => {
 		});
 	});
 	context('Promise.#iif', () => {
-		it('when the result is true, must execute the success function', (done) => {
+		it('when the condition result is true, must execute the success function', (done) => {
 			Promise.iif(() => true, done, () => done({message: 'different'}));
 		});
 
-		it('when the result is false, must execute the fail function', (done) => {
+		it('when the condition is true, must execute the success function', (done) => {
+			Promise.iif(true, done, () => done({message: 'different'}));
+		});
+
+		it('when the condition is false, must execute the fail function', (done) => {
 			Promise.iif(() => false, () => done({message: 'equal'}), done);
 		});
 	});
 	context('Promise.#when', () => {
-		it('when the result is true, must execute the method', (done) =>
+		it('when the condition result is true, must execute the method', (done) =>
 			Promise.when(() => 1 === 1, () => done())
 		);
 
-		it('when the result is false, must not execute the method', (done) => {
+		it('when the condition is true, must execute the method', (done) =>
+			Promise.when(true, () => done())
+		);
+
+		it('when the condition result is false, must not execute the method', (done) => {
 			Promise.when(() => 1 === 2, () => done({message: 'equal'}))
 				.then(() => done())
 		});
 	});
 	context('Promise.#unless', () => {
-		it('when the result is false, must execute the method', (done) =>
+		it('when the condition result is false, must execute the method', (done) =>
 			Promise.unless(() => false, done)
 		);
 
-		it('when the result is true, must not execute the method', (done) => {
+		it('when the condition is false, must execute the method', (done) =>
+			Promise.unless(false, done)
+		);
+
+		it('when the condition result is true, must not execute the method', (done) => {
 			Promise.unless(x => true, () => done({message: 'equal'}))
 				.then(() => done());
 		});
