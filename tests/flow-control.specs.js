@@ -20,6 +20,44 @@ describe('flow control', () => {
 				});
 		});
 	});
+
+	context('#for', () => {
+		it('when called 1 to 10, i variable must be from 1 to 10', (done) => {
+			let val = 0;
+			Promise.resolve()
+				.for(0, 10, (i) => {
+					assert.equal(i, val++);
+				})
+				.then(() => done());
+		});
+		it('when called from a resolved value, the val must be equal', (done) => {
+			let val = 3;
+			Promise.resolve(val)
+				.for(0, 10, (i, v) => {
+					assert.equal(v, val);
+				})
+				.then(() => done());
+		});
+	});
+	context('#forAll', () => {
+		it('when called 1 to 10, i variable must be from 1 to 10', (done) => {
+			let val = 0;
+			Promise.resolve()
+				.forAll(0, 10, (i) => {
+					assert.equal(i, val++);
+				})
+				.then(() => done());
+		});
+		it('when called from a resolved value, the val must be equal', (done) => {
+			let val = 3;
+			Promise.resolve(val)
+				.forAll(0, 10, (i, v) => {
+					assert.equal(v, val);
+				})
+				.then(() => done());
+		});
+	});
+
 	context('#when', () => {
 		it('when the result is true, must execute the method', (done) => {
 			Promise.resolve(3)

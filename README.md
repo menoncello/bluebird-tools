@@ -28,6 +28,20 @@ Promise.resolve(1)
     .iif(x => x === 1, x => console.log('success', x), x => console.log('fail', x));
 ```
 
+#### promise.for(start, end, method) -> `promise`
+Calls `method` passing the `iterator` and the resolved `value`
+ ```js
+Promise.resolve(123)
+    .for(0, 5, (i, val) => console.log('iterator:', i, 'value:', val));
+/* output:
+iterator: 0 value: 123
+iterator: 1 value: 123
+iterator: 2 value: 123
+iterator: 3 value: 123
+iterator: 4 value: 123
+ */
+```
+
 #### promise.when(condition, success) -> `promise`
 Calls `success` if pass the `condition` or calls `fail`
  ```js
